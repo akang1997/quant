@@ -1,5 +1,5 @@
 /// <reference path="../d.ts/node.d.ts" />
-/// <reference path="../d.ts/lodash-3.10.d.ts" />
+/// <reference path="../d.ts/lodash.d.ts" />
 
 
 // 提供上下文对象
@@ -40,7 +40,8 @@ class Context extends events.EventEmitter {
         // init user strategy
         strategy.init(this.account, this.order);
     }
-
+    
+    // tick 周期
     hasNext(): boolean {
         return this.timeArr.length > this._index;
     }

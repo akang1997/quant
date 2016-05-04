@@ -42,7 +42,7 @@ function runTick(ctx: Context) {
         ctx._update_current_price(currentDateStr);
 
         // +++++ tick first
-        strategy.tick(account, order, currentDateStr);
+        strategy.tick(account, order, currentDateStr, ctx.currentPriceMap);
 
         // +++++ check week
         currentWeek = date.getDay();
@@ -50,7 +50,7 @@ function runTick(ctx: Context) {
         //// 由于日期可能有断隔，只能假设current时间大于last，别的不能假设
         //// 星期小于，或者日期间隔超过6天
         if (currentWeek <= lastWeek || (currentWeek - lastTime) / oneDayTime >= 7) {
-            strategy.run_weekly(account, order, currentDateStr);
+            strategy.run_weekly(account, order, currentDateStr, ctx.currentPriceMap);
         }
         lastWeek = currentWeek;
         lastTime = currentTime;
@@ -58,7 +58,7 @@ function runTick(ctx: Context) {
         // +++++ check month
         currentMonth = date.getMonth();
         if (currentMonth != lastMonth) {
-            strategy.run_monthly(account, order, currentDateStr);
+            strategy.run_monthly(account, order, currentDateStr, ctx.currentPriceMap);
             lastMonth = currentMonth;
         }
         

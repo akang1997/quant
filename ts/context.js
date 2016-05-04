@@ -1,5 +1,5 @@
 /// <reference path="../d.ts/node.d.ts" />
-/// <reference path="../d.ts/lodash-3.10.d.ts" />
+/// <reference path="../d.ts/lodash.d.ts" />
 "use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -22,7 +22,7 @@ var Context = (function (_super) {
         if (initMoney === void 0) { initMoney = 100000; }
         _super.call(this); // 初始化
         this._index = 0; /// time index
-        this.priceMap = {};
+        this.priceMap = {}; // 历史价格数据
         this.DAILY = DAILY; // 为了便于用户使用，弄成实例变量。。。
         this.MINUTE = MINUTE;
         this.account = new Account(startDate, endDate, initMoney, this);
@@ -34,6 +34,7 @@ var Context = (function (_super) {
         // init user strategy
         strategy.init(this.account, this.order);
     };
+    // tick 周期
     Context.prototype.hasNext = function () {
         return this.timeArr.length > this._index;
     };
@@ -45,8 +46,19 @@ var Context = (function (_super) {
     };
     Context.prototype._init_timeArr = function () {
         var stocks = Object.keys(this.priceMap);
-        this.timeArr = _.pluck(this.priceMap[stocks[0]], "");
+        var stockPriceArr = this.priceMap[stocks[0]];
+        this.timeArr = stockPriceArr.map(function (e) { return e.date; }); // 使用<>进行类型转换
         this.emit("init_done");
+    };
+    Context.prototype._update_current_price = function (dateStr) {
+        this.currentPriceMap = this.getOneDayPriceMap(dateStr);
+    };
+    Context.prototype.getOneDayPriceMap = function (dateStr) {
+        var cp = {};
+        for (var code in this.priceMap) {
+            cp[code] = _.find(this.priceMap[code], function (e) { return e.date === dateStr; });
+        }
+        return cp;
     };
     Context.prototype.set_stocks = function (stocks) {
         var _this = this;
@@ -76,6 +88,25 @@ var Context = (function (_super) {
         if (start_date === void 0) { start_date = '2015-01-01'; }
         if (end_date === void 0) { end_date = '2015-12-31'; }
         if (frequency === void 0) { frequency = DAILY; }
+        var priceArr = this.priceMap[security], ret;
+        if (priceArr == null) {
+            console.log("Error: no security in setting");
+            ret = [];
+        }
+        else {
+            var startIndex = priceArr.indexOf(start_date); // 采用二分查找？？？
+            startIndex = startIndex === -1 ? 0 : startIndex; // 边界检查
+            var endIndex = void 0;
+            if (start_date === end_date) {
+                endIndex = startIndex;
+            }
+            else {
+                endIndex = priceArr.indexOf(end_date);
+                endIndex = endIndex === -1 ? priceArr.length - 1 : endIndex;
+            }
+            ret = priceArr.slice(startIndex, endIndex + 1);
+        }
+        return ret;
     };
     // 设定滑点
     Context.prototype.set_slip = function (slip) {
