@@ -1,0 +1,13 @@
+{
+    "version": "0.0.1",
+    "name": "xxx",
+    "description": "a JavaScript client for quant",
+    "keywords": [
+        "quant"
+    ],
+    "main": "./ts/app.js",
+    "dependencies": {
+        "request": "*",
+        "lodash": "*"
+    }
+}

@@ -41,7 +41,7 @@ function get(url, succ, err, complete) {
 exports.get = get;
 function reqBack(cfg, errInfo, httpResponse, body) {
     if (!errInfo && httpResponse.statusCode == 200) {
-        // console.log(body)
+        // Log.info(body)
         cfg.success && cfg.success(body);
     }
     else {

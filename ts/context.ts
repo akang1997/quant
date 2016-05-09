@@ -10,6 +10,7 @@ import events = require('events');
 import util = require("util");
 import httpRequest = require("./httprequest")
 import _ = require("lodash");
+import Log = require("./log");
 
 var DAILY = 'daily';
 var MINUTE = 'minute';
@@ -23,7 +24,8 @@ class Context extends events.EventEmitter {
     strategy: Stragety.IStrategy;
     priceMap: { [key: string]: any[] } = {};  // 历史价格数据
     currentPriceMap: { [key: string]: number };  // 当前tick的code/price map
-
+    currentTime: string;
+    
     DAILY = DAILY;  // 为了便于用户使用，弄成实例变量。。。
     MINUTE = MINUTE;
 
@@ -77,9 +79,9 @@ class Context extends events.EventEmitter {
     set_stocks(stock: string): void;
     set_stocks(stocks: string[]): void;
     set_stocks(stocks: any): void {
-        if (!stocks) return console.warn("no valid stock set");
+        if (!stocks) return Log.error("no valid stock set");
         if (!Array.isArray(stocks)) stocks = [stocks];
-        console.log("stocks to operate is ", stocks);
+        Log.info("stocks to operate is ", stocks);
         let count = stocks.length;
         let self = this;
         stocks.forEach(element => {
@@ -100,14 +102,14 @@ class Context extends events.EventEmitter {
     get_securities(types: string): string[];
     get_securities(types: string[]): { [key: string]: string[]; };  // ts 默认不支持map。。。
     get_securities(types: any = []): any {
-        console.log("get stock list for ", types);
+        Log.info("get stock list for ", types);
     }
 
     // 获取指定股票的价格数据
     get_price(security: string, start_date = '2015-01-01', end_date = '2015-12-31', frequency = DAILY) {
         var priceArr = this.priceMap[security], ret: any[];
         if (priceArr == null) {
-            console.log("Error: no security in setting");
+            Log.error("Error: no security in setting");
             ret = [];
         } else {
             let startIndex = priceArr.indexOf(start_date);  // 采用二分查找？？？

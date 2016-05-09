@@ -43,7 +43,7 @@ export function get(url: string, succ?, err?, complete?) {
 
 function reqBack(cfg, errInfo, httpResponse, body) {
     if (!errInfo && httpResponse.statusCode == 200) {  // no cache
-        // console.log(body)
+        // Log.info(body)
         cfg.success && cfg.success(body);
     } else {
         cfg.err && cfg.err(errInfo, httpResponse, body)

@@ -17,7 +17,7 @@ export function run(UserStrategy: Strategy.StrategyConstructable): void {
     ctx.once("init_done", function () {
         runTick(ctx);
     });
-    
+
     ctx.init(strategy);
 }
 
@@ -34,12 +34,14 @@ function runTick(ctx: Context) {
     var currentMonth: number;
     var currentDateStr = "";
     var date: Date;
-    
+    var lastMonthTime: number = -1;
+
     while (ctx.hasNext()) {
 
         currentDateStr = ctx.next();
         date = new Date(currentDateStr);
         ctx._update_current_price(currentDateStr);
+        ctx.currentTime = currentDateStr;
 
         // +++++ tick first
         strategy.tick(account, order, currentDateStr, ctx.currentPriceMap);
@@ -58,10 +60,14 @@ function runTick(ctx: Context) {
         // +++++ check month
         currentMonth = date.getMonth();
         if (currentMonth != lastMonth) {
+            if (lastMonthTime > 0) {
+                ctx.account.updateInterestIncome((currentTime - lastMonthTime) / oneDayTime);
+            }
             strategy.run_monthly(account, order, currentDateStr, ctx.currentPriceMap);
             lastMonth = currentMonth;
+            lastMonthTime = currentTime;
         }
-        
+
         // TODO 每天运行先不管把
     }
 }

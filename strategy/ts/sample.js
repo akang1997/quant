@@ -15,6 +15,7 @@ var Average = (function () {
         g.moneyPiece = Math.round(account.initMoney / 36); // 资金均分为36份，3年买完
     };
     Average.prototype.tick = function (account, order, crtTime, currentPriceMap) {
+        // null
     };
     Average.prototype.run_monthly = function (account, order, crtTime, currentPriceMap) {
         var price = currentPriceMap[g.code];

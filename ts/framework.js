@@ -25,10 +25,12 @@ function runTick(ctx) {
     var currentMonth;
     var currentDateStr = "";
     var date;
+    var lastMonthTime = -1;
     while (ctx.hasNext()) {
         currentDateStr = ctx.next();
         date = new Date(currentDateStr);
         ctx._update_current_price(currentDateStr);
+        ctx.currentTime = currentDateStr;
         // +++++ tick first
         strategy.tick(account, order, currentDateStr, ctx.currentPriceMap);
         // +++++ check week
@@ -44,8 +46,12 @@ function runTick(ctx) {
         // +++++ check month
         currentMonth = date.getMonth();
         if (currentMonth != lastMonth) {
+            if (lastMonthTime > 0) {
+                ctx.account.updateInterestIncome((currentTime - lastMonthTime) / oneDayTime);
+            }
             strategy.run_monthly(account, order, currentDateStr, ctx.currentPriceMap);
             lastMonth = currentMonth;
+            lastMonthTime = currentTime;
         }
     }
 }

@@ -12,6 +12,7 @@ var Order = require("./order");
 var events = require('events');
 var httpRequest = require("./httprequest");
 var _ = require("lodash");
+var Log = require("./log");
 var DAILY = 'daily';
 var MINUTE = 'minute';
 var Context = (function (_super) {
@@ -63,10 +64,10 @@ var Context = (function (_super) {
     Context.prototype.set_stocks = function (stocks) {
         var _this = this;
         if (!stocks)
-            return console.warn("no valid stock set");
+            return Log.error("no valid stock set");
         if (!Array.isArray(stocks))
             stocks = [stocks];
-        console.log("stocks to operate is ", stocks);
+        Log.info("stocks to operate is ", stocks);
         var count = stocks.length;
         var self = this;
         stocks.forEach(function (element) {
@@ -81,7 +82,7 @@ var Context = (function (_super) {
     };
     Context.prototype.get_securities = function (types) {
         if (types === void 0) { types = []; }
-        console.log("get stock list for ", types);
+        Log.info("get stock list for ", types);
     };
     // 获取指定股票的价格数据
     Context.prototype.get_price = function (security, start_date, end_date, frequency) {
@@ -90,7 +91,7 @@ var Context = (function (_super) {
         if (frequency === void 0) { frequency = DAILY; }
         var priceArr = this.priceMap[security], ret;
         if (priceArr == null) {
-            console.log("Error: no security in setting");
+            Log.error("Error: no security in setting");
             ret = [];
         }
         else {

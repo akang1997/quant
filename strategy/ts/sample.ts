@@ -23,7 +23,7 @@ class Average implements Strategy.IStrategy {
     }
 
     tick(account: Account, order: Order, crtTime: string, currentPriceMap: { [key: string]: number }) {
-
+        // null
     }
 
     run_monthly(account: Account, order: Order, crtTime: string, currentPriceMap: { [key: string]: number }) {
