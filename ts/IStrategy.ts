@@ -1,6 +1,7 @@
 import Account = require("./account");
 import Order = require("./order");
 import Context = require("./context");
+import types = require("./types");
 
 // 用户策略接口
 export interface IStrategy {
@@ -11,13 +12,13 @@ export interface IStrategy {
      * 说明：tick函数，每一个周期（天，分钟，价格跳动）执行一次，策略的核心函数
      * crtTime : 当前时间字符串
      */
-    tick(account: Account, order: Order, crtTime: string, currentPriceMap: { [key: string]: number }): void
+    tick(account: Account, order: Order, crtTime: string, currentPriceMap: { [key: string]: types.PriceObj }): void
     // TODO 每个月跑一次，可以设置是每个月的哪一天；收盘后执行
-    run_monthly(account: Account, order: Order, crtTime: string, currentPriceMap: { [key: string]: number }): void
+    run_monthly(account: Account, order: Order, crtTime: string, currentPriceMap: { [key: string]: types.PriceObj }): void
     // TODO 每个周跑一次，可以设置是每个周的哪一天；收盘后执行
-    run_weekly(account: Account, order: Order, crtTime: string, currentPriceMap: { [key: string]: number }): void
+    run_weekly(account: Account, order: Order, crtTime: string, currentPriceMap: { [key: string]: types.PriceObj }): void
     // TODO 每天跑一次，；收盘后执行 ？？
-    run_daily(account: Account, order: Order, crtTime: string, currentPriceMap: { [key: string]: number }): void
+    run_daily(account: Account, order: Order, crtTime: string, currentPriceMap: { [key: string]: types.PriceObj }): void
 }
 
 export interface StrategyConstructable {

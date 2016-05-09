@@ -18,11 +18,11 @@ var Average = (function () {
         // null
     };
     Average.prototype.run_monthly = function (account, order, crtTime, currentPriceMap) {
-        var price = currentPriceMap[g.code];
+        var priceObj = currentPriceMap[g.code];
         var unit = 100; // 100股 一手么。。。
         // 计算应该买多少手
-        var count = g.moneyPiece / (price * unit);
-        count = Math.round(count);
+        var count = g.moneyPiece / (priceObj.adj_close * unit);
+        count = Math.floor(count);
         if (count > 0)
             order.billBuy(g.code, count * unit);
     };

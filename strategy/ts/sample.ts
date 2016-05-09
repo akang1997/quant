@@ -22,24 +22,24 @@ class Average implements Strategy.IStrategy {
         g.moneyPiece = Math.round(account.initMoney / 36);  // 资金均分为36份，3年买完
     }
 
-    tick(account: Account, order: Order, crtTime: string, currentPriceMap: { [key: string]: number }) {
+    tick(account: Account, order: Order, crtTime: string, currentPriceMap: { [key: string]: any }) {
         // null
     }
 
-    run_monthly(account: Account, order: Order, crtTime: string, currentPriceMap: { [key: string]: number }) {
-        var price = currentPriceMap[g.code];
+    run_monthly(account: Account, order: Order, crtTime: string, currentPriceMap: { [key: string]: any }) {
+        var priceObj = currentPriceMap[g.code];
         var unit = 100;  // 100股 一手么。。。
         // 计算应该买多少手
-        var count = g.moneyPiece / (price * unit);
-        count = Math.round(count);
+        var count = g.moneyPiece / (priceObj.adj_close * unit);
+        count = Math.floor(count);
         if (count > 0) order.billBuy(g.code, count * unit);
     }
 
-    run_weekly(account: Account, order: Order, crtTime: string, currentPriceMap: { [key: string]: number }) {
+    run_weekly(account: Account, order: Order, crtTime: string, currentPriceMap: { [key: string]: any }) {
         // 每周定投百分之一
     }
 
-    run_daily(account: Account, order: Order, crtTime: string, currentPriceMap: { [key: string]: number }) {
+    run_daily(account: Account, order: Order, crtTime: string, currentPriceMap: { [key: string]: any }) {
     }
 }
 

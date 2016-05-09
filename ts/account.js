@@ -10,6 +10,8 @@ var Account = (function () {
         this.initMoney = initMoney;
         this.ctx = ctx;
         this.interest = interest;
+        this.history = []; // 记录所有剩余资金的变动
+        this.historyMarketValue = []; // 记录历史市值变动 
         this.remainMoney = this.initMoney;
         this.marketValue = this.initMoney;
     }
@@ -42,8 +44,15 @@ var Account = (function () {
         this.remainMoney += amount;
         return true;
     };
+    // 更新市值;; 市值算不算余额哦
     Account.prototype.updateMarketValue = function () {
-        // TODO
+        var values = 0;
+        var holdings = this.ctx.order.holdingStock;
+        for (var code in holdings) {
+            values += holdings[code].count + this.ctx.currentPriceMap[code].adj_close;
+        }
+        this.marketValue = values + this.remainMoney;
+        this.historyMarketValue.push({ date: this.ctx.currentTime, marketValue: this.marketValue });
     };
     Account.prototype._makeRecord = function (isIncome, amount, reason) {
         this.history.push({

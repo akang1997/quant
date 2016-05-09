@@ -70,12 +70,17 @@ var Context = (function (_super) {
         Log.info("stocks to operate is ", stocks);
         var count = stocks.length;
         var self = this;
-        stocks.forEach(function (element) {
-            httpRequest.queryPrice(element, _this.account.startDate, _this.account.endDate, function (data) {
-                self._add_price(element, data);
-                count--;
-                if (count === 0) {
-                    self._init_timeArr();
+        stocks.forEach(function (code) {
+            httpRequest.queryPrice(code, _this.account.startDate, _this.account.endDate, function (data) {
+                if (data.success == true) {
+                    self._add_price(code, data.result);
+                    count--;
+                    if (count === 0) {
+                        self._init_timeArr();
+                    }
+                }
+                else {
+                    Log.error("Error get price of ", code, data.error);
                 }
             });
         });

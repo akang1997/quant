@@ -1,19 +1,20 @@
 // 运行框架，加载库，然后加载用户策略，然后执行策略，done。。。
 "use strict";
 var Context = require("./context");
+var Log = require("./log");
 var oneDayTime = 1000 * 60 * 60 * 24; // 一天毫秒数
 // 先假设，同一个策略不会同时执行
-function run(UserStrategy) {
+function run(UserStrategy, after) {
     // init environment
     var ctx = new Context();
     var strategy = new UserStrategy(ctx);
     ctx.once("init_done", function () {
-        runTick(ctx);
+        runTick(ctx, after);
     });
     ctx.init(strategy);
 }
 exports.run = run;
-function runTick(ctx) {
+function runTick(ctx, after) {
     var account = ctx.account;
     var order = ctx.order;
     var strategy = ctx.strategy;
@@ -53,6 +54,12 @@ function runTick(ctx) {
             lastMonth = currentMonth;
             lastMonthTime = currentTime;
         }
+        ctx.account.updateMarketValue();
     }
+    // Log.info(ctx.order);
+    // Log.info(ctx.account);
+    Log.info(ctx.account.historyMarketValue);
+    Log.info("end of framework...");
+    after && after();
 }
 //# sourceMappingURL=framework.js.map

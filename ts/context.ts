@@ -11,6 +11,7 @@ import util = require("util");
 import httpRequest = require("./httprequest")
 import _ = require("lodash");
 import Log = require("./log");
+import types = require("./types")
 
 var DAILY = 'daily';
 var MINUTE = 'minute';
@@ -23,9 +24,9 @@ class Context extends events.EventEmitter {
     _index = 0;  /// time index
     strategy: Stragety.IStrategy;
     priceMap: { [key: string]: any[] } = {};  // 历史价格数据
-    currentPriceMap: { [key: string]: number };  // 当前tick的code/price map
+    currentPriceMap: { [key: string]: types.PriceObj };  // 当前tick的code/price map
     currentTime: string;
-    
+
     DAILY = DAILY;  // 为了便于用户使用，弄成实例变量。。。
     MINUTE = MINUTE;
 
@@ -42,7 +43,7 @@ class Context extends events.EventEmitter {
         // init user strategy
         strategy.init(this.account, this.order);
     }
-    
+
     // tick 周期
     hasNext(): boolean {
         return this.timeArr.length > this._index;
@@ -61,19 +62,19 @@ class Context extends events.EventEmitter {
         this.timeArr = stockPriceArr.map(e => { return <string>e.date; });  // 使用<>进行类型转换
         this.emit("init_done");
     }
-    
-    _update_current_price(dateStr: string){
+
+    _update_current_price(dateStr: string) {
         this.currentPriceMap = this.getOneDayPriceMap(dateStr);
     }
-    
-    getOneDayPriceMap(dateStr: string):{[key:string]:number}{
-        var cp:{[key:string]:number} = {};
-        for(var code in this.priceMap){
+
+    getOneDayPriceMap(dateStr: string): { [key: string]: types.PriceObj } {
+        var cp: { [key: string]: types.PriceObj } = {};
+        for (var code in this.priceMap) {
             cp[code] = _.find(this.priceMap[code], e => e.date === dateStr);
         }
         return cp;
     }
-    
+
     // 用户初始化的时候，设置他要操作的所有stock，限定范围，从而一次性取回数据。。。
     // 可以调用多次？？？
     set_stocks(stock: string): void;
@@ -84,15 +85,20 @@ class Context extends events.EventEmitter {
         Log.info("stocks to operate is ", stocks);
         let count = stocks.length;
         let self = this;
-        stocks.forEach(element => {
-            httpRequest.queryPrice(element,
+        stocks.forEach(code => {
+            httpRequest.queryPrice(code,
                 this.account.startDate,
                 this.account.endDate,
                 function (data: any) {
-                    self._add_price(element, data);
-                    count--;
-                    if (count === 0) {
-                        self._init_timeArr();
+                    if (data.success == true) {
+                        self._add_price(code, data.result);
+                        count--;
+                        if (count === 0) {
+                            self._init_timeArr();
+                        }
+                    } else {
+                        Log.error("Error get price of ", code, data.error);
+                        // how to terminalor
                     }
                 });
         });

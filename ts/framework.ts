@@ -6,22 +6,23 @@ import indicator = require("./indicator");
 import log = require("./log");
 import Context = require("./context");
 import Strategy = require("./IStrategy");  // 接口类型
+import Log = require("./log");
 
 var oneDayTime = 1000 * 60 * 60 * 24; // 一天毫秒数
 
 // 先假设，同一个策略不会同时执行
-export function run(UserStrategy: Strategy.StrategyConstructable): void {
+export function run(UserStrategy: Strategy.StrategyConstructable, after): void {
     // init environment
     var ctx = new Context();
     var strategy = new UserStrategy(ctx);
     ctx.once("init_done", function () {
-        runTick(ctx);
+        runTick(ctx, after);
     });
 
     ctx.init(strategy);
 }
 
-function runTick(ctx: Context) {
+function runTick(ctx: Context, after) {
     var account = ctx.account;
     var order = ctx.order;
     var strategy = ctx.strategy;
@@ -68,6 +69,13 @@ function runTick(ctx: Context) {
             lastMonthTime = currentTime;
         }
 
+        ctx.account.updateMarketValue();
         // TODO 每天运行先不管把
     }
+    
+    // Log.info(ctx.order);
+    // Log.info(ctx.account);
+    Log.info(ctx.account.historyMarketValue);
+    Log.info("end of framework...");
+    after && after();
 }

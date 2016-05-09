@@ -2,8 +2,8 @@
 "use strict";
 var request = require('request');
 function queryPrice(code, fromDate, toDate, succ, err, complete) {
-    /// http://localhost:8089/json/s?_fw_service=findListBySqlMap&sqlId=com.ain.persist.db.dao.ITickerHisDao.selectTickerHis&jsonData={code:000001,%20fromDate:%271900-01-01%27,toDate:%271998-01-01%27}
-    return post({
+    /// http://128.160.181.71:8089/json/s?_fw_service=findListBySqlMap&sqlId=com.ain.persist.db.dao.ITickerHisDao.selectTickerHis&jsonData={"code":"000001","fromDate":"1900-01-01","toDate":"1998-01-01"}
+    return postJson({
         url: 'http://128.160.181.71:8089/json/s' + "?_=" + Math.random(),
         data: {
             "_fw_service": "findListBySqlMap",
@@ -20,28 +20,41 @@ function queryPrice(code, fromDate, toDate, succ, err, complete) {
     });
 }
 exports.queryPrice = queryPrice;
-function post(cfg) {
+function post(cfg, isJson) {
+    if (isJson === void 0) { isJson = false; }
     return request.post({
         url: cfg.url,
         form: cfg.data || {}
     }, function (errInfo, httpResponse, body) {
-        reqBack(cfg, errInfo, httpResponse, body);
+        reqBack(cfg, errInfo, httpResponse, body, isJson);
     });
 }
 exports.post = post;
-function get(url, succ, err, complete) {
+function postJson(cfg) {
+    post(cfg, true);
+}
+exports.postJson = postJson;
+function getJson(url, succ, err, complete) {
+    get(url, succ, err, complete, true);
+}
+exports.getJson = getJson;
+function get(url, succ, err, complete, isJson) {
+    if (isJson === void 0) { isJson = false; }
     request(url, function (errInfo, httpResponse, body) {
         reqBack({
             success: succ,
             error: err,
             complete: complete
-        }, errInfo, httpResponse, body);
+        }, errInfo, httpResponse, body, isJson);
     });
 }
 exports.get = get;
-function reqBack(cfg, errInfo, httpResponse, body) {
+// 请求完成后的处理
+function reqBack(cfg, errInfo, httpResponse, body, isJson) {
     if (!errInfo && httpResponse.statusCode == 200) {
         // Log.info(body)
+        if (isJson)
+            body = JSON.parse(body);
         cfg.success && cfg.success(body);
     }
     else {
