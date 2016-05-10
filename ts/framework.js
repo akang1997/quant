@@ -56,9 +56,7 @@ function runTick(ctx, after) {
         }
         ctx.account.updateMarketValue();
     }
-    // Log.info(ctx.order);
-    // Log.info(ctx.account);
-    Log.info(ctx.account.historyMarketValue);
+    strategy.end(account, order, currentDateStr);
     Log.info("end of framework...");
     after && after();
 }

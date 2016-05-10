@@ -18,7 +18,7 @@ class Account {
     constructor(
         public startDate: string,
         public endDate: string,
-        public initMoney: number,  // 初始资金
+        public initMoney: number = 100000,  // 初始资金
         public ctx: Context,
         public interest: number = 0.03  // 剩余资金年利率
     ) {
@@ -61,7 +61,7 @@ class Account {
         var values = 0;
         var holdings = this.ctx.order.holdingStock;
         for (var code in holdings) {
-            values += holdings[code].count + this.ctx.currentPriceMap[code].adj_close;
+            values += holdings[code].count * this.ctx.currentPriceMap[code].adj_close;
         }
         this.marketValue = values + this.remainMoney;
         this.historyMarketValue.push({date: this.ctx.currentTime, marketValue: this.marketValue});

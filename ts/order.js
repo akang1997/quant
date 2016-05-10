@@ -5,7 +5,8 @@ var Order = (function () {
     function Order(ctx) {
         this.history = []; // 记录所有发生的买卖
         this.holdingStock = {}; // 当前持有证券列表
-        this.changeFee = 0.003; // 手续费默认千三把
+        this.changeFeeRatio = 0.003; // 手续费率默认千三把
+        this.accumulateFee = 0; // 累计手续费
         this.ctx = ctx;
     }
     // 下买单，目前只能以当前价买入卖出吧
@@ -20,11 +21,11 @@ var Order = (function () {
         // TODO 如何控制 mount 是手的合法数量。。。先不管
         //// 检测余额
         amount = Math.round(amount);
-        var fee = price * amount * this.changeFee; // 平均摩擦成本加手续费
+        var fee = price * amount * this.changeFeeRatio; // 平均摩擦成本加手续费
         var needMoney = price * amount + fee;
         if (this.ctx.account.remainMoney < needMoney) {
-            Log.error("Error: not enough money to buy " +
-                code + " needMoney " + needMoney + " remainMoney " + this.ctx.account.remainMoney);
+            Log.error("Error: not enough money to buy " + code + " amount " + amount +
+                " needMoney " + needMoney + " remainMoney " + this.ctx.account.remainMoney);
             return false;
         }
         //// 执行买入，滑点/手续费 就是实际买入成本比当前价始终高一点。。。
@@ -36,6 +37,8 @@ var Order = (function () {
         this._updateHolding(code, amount, price, fee); // 增加持有
         // 更新order历史
         this._makeRecord(code, amount, price, fee);
+        // 累计手续费
+        this.accumulateFee += fee;
     };
     // 相当于负的数目
     Order.prototype.billSell = function (code, amount) {
@@ -69,7 +72,10 @@ var Order = (function () {
         if (mount > 0) {
             stockState.costPrice = price * deltaPercent + stockState.costPrice * (1 - deltaPercent); // 平均成本
         }
-        this.holdingStock[code] = stockState;
+        if (stockState.count > 0)
+            this.holdingStock[code] = stockState;
+        else
+            delete this.holdingStock[code];
     };
     Order.prototype._makeRecord = function (code, mount, price, fee) {
         var isBuy = mount > 0;

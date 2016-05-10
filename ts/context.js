@@ -19,7 +19,7 @@ var Context = (function (_super) {
     __extends(Context, _super);
     function Context(startDate, endDate, initMoney) {
         if (startDate === void 0) { startDate = "1900-01-01"; }
-        if (endDate === void 0) { endDate = "2016-12-12"; }
+        if (endDate === void 0) { endDate = "2020-12-12"; }
         if (initMoney === void 0) { initMoney = 100000; }
         _super.call(this); // 初始化
         this._index = 0; /// time index

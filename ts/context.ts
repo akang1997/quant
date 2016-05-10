@@ -30,7 +30,7 @@ class Context extends events.EventEmitter {
     DAILY = DAILY;  // 为了便于用户使用，弄成实例变量。。。
     MINUTE = MINUTE;
 
-    constructor(startDate: string = "1900-01-01", endDate: string = "2016-12-12", initMoney: number = 100000) {  // default value
+    constructor(startDate: string = "1900-01-01", endDate: string = "2020-12-12", initMoney: number = 100000) {  // default value
         super();// 初始化
         this.account = new Account(startDate, endDate, initMoney, this);
         this.order = new Order(this);

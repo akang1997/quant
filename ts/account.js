@@ -4,6 +4,7 @@ var Account = (function () {
     function Account(startDate, endDate, initMoney, // 初始资金
         ctx, interest // 剩余资金年利率
         ) {
+        if (initMoney === void 0) { initMoney = 100000; }
         if (interest === void 0) { interest = 0.03; }
         this.startDate = startDate;
         this.endDate = endDate;
@@ -49,7 +50,7 @@ var Account = (function () {
         var values = 0;
         var holdings = this.ctx.order.holdingStock;
         for (var code in holdings) {
-            values += holdings[code].count + this.ctx.currentPriceMap[code].adj_close;
+            values += holdings[code].count * this.ctx.currentPriceMap[code].adj_close;
         }
         this.marketValue = values + this.remainMoney;
         this.historyMarketValue.push({ date: this.ctx.currentTime, marketValue: this.marketValue });

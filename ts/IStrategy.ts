@@ -19,6 +19,8 @@ export interface IStrategy {
     run_weekly(account: Account, order: Order, crtTime: string, currentPriceMap: { [key: string]: types.PriceObj }): void
     // TODO 每天跑一次，；收盘后执行 ？？
     run_daily(account: Account, order: Order, crtTime: string, currentPriceMap: { [key: string]: types.PriceObj }): void
+    // 最后收尾函数
+    end(account: Account, order: Order, crtTime: string)
 }
 
 export interface StrategyConstructable {

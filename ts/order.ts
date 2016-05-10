@@ -14,8 +14,9 @@ class Order {
     private ctx: Context;
     history: any[] = [];        // 记录所有发生的买卖
     holdingStock: { [key: string]: Holding } = {}; // 当前持有证券列表
-    changeFee: number = 0.003;     // 手续费默认千三把
-
+    changeFeeRatio: number = 0.003;     // 手续费率默认千三把
+    accumulateFee: number = 0; // 累计手续费
+    
     constructor(ctx: Context) {
         this.ctx = ctx;
     }
@@ -32,11 +33,11 @@ class Order {
         // TODO 如何控制 mount 是手的合法数量。。。先不管
         //// 检测余额
         amount = Math.round(amount);
-        var fee = price * amount * this.changeFee;  // 平均摩擦成本加手续费
+        var fee = price * amount * this.changeFeeRatio;  // 平均摩擦成本加手续费
         var needMoney = price * amount + fee;
         if (this.ctx.account.remainMoney < needMoney) {
-            Log.error("Error: not enough money to buy " + 
-                code + " needMoney " + needMoney + " remainMoney " + this.ctx.account.remainMoney);
+            Log.error("Error: not enough money to buy " +  code + " amount " + amount +
+                " needMoney " + needMoney + " remainMoney " + this.ctx.account.remainMoney);
             return false;
         }
         //// 执行买入，滑点/手续费 就是实际买入成本比当前价始终高一点。。。
@@ -48,6 +49,8 @@ class Order {
         this._updateHolding(code, amount, price, fee);  // 增加持有
         // 更新order历史
         this._makeRecord(code, amount, price, fee);
+        // 累计手续费
+        this.accumulateFee += fee;
     }
 
     // 相当于负的数目
@@ -84,7 +87,8 @@ class Order {
         if (mount > 0) {  // 买入才更新平均价格，卖出不影响平均价格
             stockState.costPrice = price * deltaPercent + stockState.costPrice * (1 - deltaPercent);      // 平均成本
         }
-        this.holdingStock[code] = stockState;
+        if(stockState.count > 0) this.holdingStock[code] = stockState;
+        else delete this.holdingStock[code];
     }
 
     _makeRecord(code: string, mount: number, price: number, fee: number): void {

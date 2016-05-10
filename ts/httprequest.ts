@@ -3,7 +3,7 @@
 import request = require('request');
 
 export function queryPrice(code: string, fromDate: string, toDate: string, succ?: any, err?, complete?) {
-    /// http://128.160.181.71:8089/json/s?_fw_service=findListBySqlMap&sqlId=com.ain.persist.db.dao.ITickerHisDao.selectTickerHis&jsonData={"code":"000001","fromDate":"1900-01-01","toDate":"1998-01-01"}
+    /// http://128.160.181.71:8089/json/s?_fw_service=findListBySqlMap&sqlId=com.ain.persist.db.dao.ITickerHisDao.selectTickerHis&jsonData={"code":"000001","fromDate":"1900-01-01","toDate":"2020-01-01"}
 
     return postJson({
         url: 'http://128.160.181.71:8089/json/s' + "?_=" + Math.random(),
