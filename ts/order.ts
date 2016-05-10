@@ -14,10 +14,11 @@ class Order {
     private ctx: Context;
     history: any[] = [];        // 记录所有发生的买卖
     holdingStock: { [key: string]: Holding } = {}; // 当前持有证券列表
-    changeFeeRatio: number = 0.003;     // 手续费率默认千三把
+    // changeFeeRatio: number = 0.003;     
     accumulateFee: number = 0; // 累计手续费
-    
-    constructor(ctx: Context) {
+
+    // 手续费率默认千三把
+    constructor(public changeFeeRatio: number = 0.003, ctx: Context) {
         this.ctx = ctx;
     }
 
@@ -36,7 +37,7 @@ class Order {
         var fee = price * amount * this.changeFeeRatio;  // 平均摩擦成本加手续费
         var needMoney = price * amount + fee;
         if (this.ctx.account.remainMoney < needMoney) {
-            Log.error("Error: not enough money to buy " +  code + " amount " + amount +
+            Log.error("Error: not enough money to buy " + code + " amount " + amount +
                 " needMoney " + needMoney + " remainMoney " + this.ctx.account.remainMoney);
             return false;
         }
@@ -87,7 +88,7 @@ class Order {
         if (mount > 0) {  // 买入才更新平均价格，卖出不影响平均价格
             stockState.costPrice = price * deltaPercent + stockState.costPrice * (1 - deltaPercent);      // 平均成本
         }
-        if(stockState.count > 0) this.holdingStock[code] = stockState;
+        if (stockState.count > 0) this.holdingStock[code] = stockState;
         else delete this.holdingStock[code];
     }
 

@@ -19,8 +19,8 @@ class Account {
         public startDate: string,
         public endDate: string,
         public initMoney: number = 100000,  // 初始资金
-        public ctx: Context,
-        public interest: number = 0.03  // 剩余资金年利率
+        public interest: number = 0.03,  // 剩余资金年利率
+        public ctx: Context
     ) {
         this.remainMoney = this.initMoney;
         this.marketValue = this.initMoney;

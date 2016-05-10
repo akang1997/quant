@@ -21,9 +21,12 @@ class Average implements Strategy.IStrategy {
 
     init(account: Account, order: Order) {
         // 一定要设置所有需要操作的股票代码
-        g.code = "000001";
+        g.code = "000088";
+        g.period = 36;    // 总资金分成多少份
+        g.multiple = 1;   // 总资金盈利多少后，全部卖出
+        
         ctx.set_stocks(g.code);
-        g.moneyPiece = Math.round(account.initMoney / 36);  // 资金均分为36份，3年买完
+        g.moneyPiece = Math.round(account.initMoney / g.period);  // 资金均分
         console.log("moneyPiece:" + g.moneyPiece);
         g.lastMarketValue = account.initMoney;
     }
@@ -33,13 +36,14 @@ class Average implements Strategy.IStrategy {
     }
 
     run_monthly(account: Account, order: Order, crtTime: string, currentPriceMap: { [key: string]: any }) {
-        Log.info(crtTime + ":" + JSON.stringify(order.holdingStock));
-        if (account.marketValue > g.lastMarketValue * 2) { // sell all when double
+        // Log.info(crtTime + ":" + JSON.stringify(order.holdingStock));
+        
+        if (account.marketValue > g.lastMarketValue * (g.multiple + 1)) { // sell all when double
             Log.info(">>>> doubled , sell all, MarketValue: " + account.marketValue);
             var count = order.holdingStock[g.code].count;
             order.billSell(g.code, count);  // sell all
             g.lastMarketValue = account.marketValue;
-            g.moneyPiece = Math.round(account.marketValue / 36);  // 资金均分为36份，3年买完
+            g.moneyPiece = Math.round(account.marketValue / g.period); // 资金均分
         }
 
         var priceObj = currentPriceMap[g.code];
@@ -48,7 +52,7 @@ class Average implements Strategy.IStrategy {
         // 计算应该买多少手
         var count = g.moneyPiece / (price * unit);
         count = Math.floor(count);
-        if (count > 0 && count * unit * price < account.remainMoney) order.billBuy(g.code, count * unit);
+        if (count > 0 && count * unit * price < account.remainMoney) order.billBuy(g.code, count * unit);  // 有钱就买
     }
 
     run_weekly(account: Account, order: Order, crtTime: string, currentPriceMap: { [key: string]: any }) {
@@ -62,7 +66,7 @@ class Average implements Strategy.IStrategy {
         // Log.info(ctx.order);
         // Log.info(ctx.account);
         // Log.info(ctx.account.historyMarketValue);
-        Log.info(ctx.order.history);
+        // Log.info(ctx.order.history);
         Log.info(ctx.account.historyMarketValue);
     }
 }

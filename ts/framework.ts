@@ -11,9 +11,19 @@ import Log = require("./log");
 var oneDayTime = 1000 * 60 * 60 * 24; // 一天毫秒数
 
 // 先假设，同一个策略不会同时执行
-export function run(UserStrategy: Strategy.StrategyConstructable, after): void {
+export function run(UserStrategy: Strategy.StrategyConstructable, config : {
+    startDate: string,
+    endDate: string,
+    initMoney?: number,
+    interest?: number,  // 剩余资金年利率
+    changeFeeRatio?: number
+} ,after): void {
     // init environment
-    var ctx = new Context();
+    var ctx = new Context(  config.startDate, 
+                            config.endDate, 
+                            config.initMoney,
+                            config.interest,
+                            config.changeFeeRatio);
     var strategy = new UserStrategy(ctx);
     ctx.once("init_done", function () {
         runTick(ctx, after);

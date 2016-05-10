@@ -30,10 +30,14 @@ class Context extends events.EventEmitter {
     DAILY = DAILY;  // 为了便于用户使用，弄成实例变量。。。
     MINUTE = MINUTE;
 
-    constructor(startDate: string = "1900-01-01", endDate: string = "2020-12-12", initMoney: number = 100000) {  // default value
+    constructor(    startDate: string = "1900-01-01", 
+                    endDate: string = "2020-12-12", 
+                    initMoney?: number,
+                    interest?: number,
+                    changeFeeRatio?: number) { 
         super();// 初始化
-        this.account = new Account(startDate, endDate, initMoney, this);
-        this.order = new Order(this);
+        this.account = new Account(startDate, endDate, initMoney, interest, this);
+        this.order = new Order(changeFeeRatio, this);
         this.timeArr = ["2015-01-01", "2015-01-02", "2015-01-03"];
     }
 

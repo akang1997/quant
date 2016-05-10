@@ -2,15 +2,15 @@
 var Log = require("./log");
 var Account = (function () {
     function Account(startDate, endDate, initMoney, // 初始资金
-        ctx, interest // 剩余资金年利率
-        ) {
+        interest, // 剩余资金年利率
+        ctx) {
         if (initMoney === void 0) { initMoney = 100000; }
         if (interest === void 0) { interest = 0.03; }
         this.startDate = startDate;
         this.endDate = endDate;
         this.initMoney = initMoney;
-        this.ctx = ctx;
         this.interest = interest;
+        this.ctx = ctx;
         this.history = []; // 记录所有剩余资金的变动
         this.historyMarketValue = []; // 记录历史市值变动 
         this.remainMoney = this.initMoney;

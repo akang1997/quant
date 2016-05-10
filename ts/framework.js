@@ -4,9 +4,9 @@ var Context = require("./context");
 var Log = require("./log");
 var oneDayTime = 1000 * 60 * 60 * 24; // 一天毫秒数
 // 先假设，同一个策略不会同时执行
-function run(UserStrategy, after) {
+function run(UserStrategy, config, after) {
     // init environment
-    var ctx = new Context();
+    var ctx = new Context(config.startDate, config.endDate, config.initMoney, config.interest, config.changeFeeRatio);
     var strategy = new UserStrategy(ctx);
     ctx.once("init_done", function () {
         runTick(ctx, after);

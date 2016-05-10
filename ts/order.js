@@ -2,10 +2,13 @@
 var Log = require("./log");
 /// 订单/仓位系统
 var Order = (function () {
-    function Order(ctx) {
+    // 手续费率默认千三把
+    function Order(changeFeeRatio, ctx) {
+        if (changeFeeRatio === void 0) { changeFeeRatio = 0.003; }
+        this.changeFeeRatio = changeFeeRatio;
         this.history = []; // 记录所有发生的买卖
         this.holdingStock = {}; // 当前持有证券列表
-        this.changeFeeRatio = 0.003; // 手续费率默认千三把
+        // changeFeeRatio: number = 0.003;     
         this.accumulateFee = 0; // 累计手续费
         this.ctx = ctx;
     }

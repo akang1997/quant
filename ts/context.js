@@ -17,17 +17,16 @@ var DAILY = 'daily';
 var MINUTE = 'minute';
 var Context = (function (_super) {
     __extends(Context, _super);
-    function Context(startDate, endDate, initMoney) {
+    function Context(startDate, endDate, initMoney, interest, changeFeeRatio) {
         if (startDate === void 0) { startDate = "1900-01-01"; }
         if (endDate === void 0) { endDate = "2020-12-12"; }
-        if (initMoney === void 0) { initMoney = 100000; }
         _super.call(this); // 初始化
         this._index = 0; /// time index
         this.priceMap = {}; // 历史价格数据
         this.DAILY = DAILY; // 为了便于用户使用，弄成实例变量。。。
         this.MINUTE = MINUTE;
-        this.account = new Account(startDate, endDate, initMoney, this);
-        this.order = new Order(this);
+        this.account = new Account(startDate, endDate, initMoney, interest, this);
+        this.order = new Order(changeFeeRatio, this);
         this.timeArr = ["2015-01-01", "2015-01-02", "2015-01-03"];
     }
     Context.prototype.init = function (strategy) {
